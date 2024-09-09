@@ -1,112 +1,120 @@
 import Search from "../../components/search";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 import "./styles.css";
 import RecipeItem from "../../components/recipe-item/index";
 import FavoriteItem from "../../components/favorite-item/index";
-import dotenv from 'dotenv';
-const apiKey = process.env.API_KEY;
-dotenv.config();
+
+const apiKey = process.env.REACT_APP_API_KEY;
 const dummydata = "dummy-----data";
 
-const Homepage = () => {
-  // 2   Loading state
-  const [loadingState, setLoadingState] = useState(false);
-  // 3  Save results that we receive from api
-  const [recipes, setRecipes] = useState([]);
 
-  // 10 favorites data state
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "filterFavorites":
+      console.log("action", action)
+      return {
+        ...state,
+        filteredValue: action.value,
+      }
+      default:
+      return state;
+  }
+};
+
+const initialState = {
+  filteredValue: "",
+};
+
+const Homepage = () => {
+  const [loadingState, setLoadingState] = useState(false);
+  const [recipes, setRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [isApiSuccess, setIsApiSuccess] = useState(false);
+  const [filteredState, dispatch] = useReducer(reducer, initialState); // useReducer is a hook that is used for state management in React. It is an alternative to useState. It is mostly preferable when you have complex state logic that involves multiple sub-values or when the next state depends on the previous one. useReducer also lets you optimize performance for components that trigger deep updates because you can pass dispatch down instead of callbacks.
 
   const getDataFromSearchComponent = (getData) => {
-    //console.log("getData", getData);
-    // 4   Keep the loading state TRUE before we are calling the api
     setLoadingState(true);
-    // 1  callin api with getData
     async function getRecipes() {
       const apiResponse = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}=${getData}`
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${getData}`
       );
       const result = await apiResponse.json();
       const { results } = result;
       if (results && results.length > 0) {
-        // 5  sat loading state to false after we receive the data
-        // 6  save the results in the state
         setLoadingState(false);
-        setRecipes(results); // the "results " we 've got from API
+        setRecipes(results);
+        setIsApiSuccess(true);
       }
     }
     getRecipes();
   };
 
+  
+
   const addToFavorites = (getCurrentRecipeItem) => {
     let copyFavorites = [...favorites];
-    // 11  check if the recipe is already in the favorites
-    const isRecipeIndexInFavorites = copyFavorites.findIndex(
-      item => item.id === getCurrentRecipeItem.id
-      
+
+    const index = copyFavorites.findIndex(
+      (item) => item.id === getCurrentRecipeItem.id
     );
-    // 12  if the recipe is not in the favorites, add it
-    if (isRecipeIndexInFavorites === -1) {
+    if (index === -1) {
       copyFavorites.push(getCurrentRecipeItem);
       setFavorites(copyFavorites);
-      // save the favorites in local storage
+      // save the favorites in localStorage
       localStorage.setItem("favorites", JSON.stringify(copyFavorites));
     } else {
-      // 13  if the recipe is in the favorites, remove it
       alert("Recipe is already in the favorites");
     }
-     
-    
   };
-const removeFromFavorites = (getCurrentId) => {
-let copyFavorites = [...favorites];
-copyFavorites = copyFavorites.filter((item) => item.id !== getCurrentId);
-setFavorites(copyFavorites);
-localStorage.setItem("favorites", JSON.stringify(copyFavorites));
-};
-  useEffect(() => {
-    const extractFavoritesFromLocalStorageOnPageLoad = JSON.parse(localStorage.getItem("favorites"));
-    setFavorites(extractFavoritesFromLocalStorageOnPageLoad);
-  }, []);
+
+  const removeFromFavorites = (getCurrentId) => {
+    let copyFavorites = [...favorites];
+    copyFavorites = copyFavorites.filter((item) => item.id !== getCurrentId);
+    setFavorites(copyFavorites);
+    localStorage.setItem("favorites", JSON.stringify(copyFavorites));
+  };
+
+  // filter the favorites
+  const filteredFavoritesItems = favorites.filter((item) =>
+    item.title.toLowerCase().includes(filteredState.filteredValue)
+  );
   return (
     <div className="homepage">
       <Search
         getDataFromSearchComponent={getDataFromSearchComponent}
         dummydataCopy={dummydata}
+        isApiSuccess={isApiSuccess}
+        setIsApiSuccess={setIsApiSuccess}
       />
-   {/* show Favorite Items */}
-   <div className="favorites-wrapper">
-   <h1 className="favorites-title">Favorites</h1>
-   <div className="favorites">
-   {favorites && favorites.length > 0 ?
-favorites.map((item) => (
-<FavoriteItem
-key={item.id}
-removeFromFavorites={()=>removeFromFavorites(item.id)}
-id={item.id}
-image={item.image}
-title={item.title}
-/>
-))
-
-
-    : null
-   }
-   </div>
-   </div>
-      {/* show Favorite Items */}
-
-
-      {/* show loading state */}
+      <div className="favorites-wrapper">
+        <h1 className="favorites-title">Favorites</h1>
+        <div className="search-favorites">
+          <input onChange={(e)=>dispatch({type: 'filterFavorites', value: e.target.value})}
+          value={filteredState.filteredValue} type="text"
+          name="searchfavorites" placeholder="Search Favorites" />
+        </div>
+        <div className="favorites">
+          {filteredFavoritesItems && filteredFavoritesItems.length > 0
+            ? filteredFavoritesItems.map((item) => (
+                <FavoriteItem
+                  key={item.id}
+                  removeFromFavorites={() => removeFromFavorites(item.id)}
+                  id={item.id}
+                  image={item.image}
+                  title={item.title}
+                />
+              ))
+            : null}
+        </div>
+      </div>
       {loadingState && (
         <div className="loading">Loading recipes! Please wait.</div>
       )}
-      {/* show loading state */}
       <div className="items">
         {recipes && recipes.length > 0
           ? recipes.map((item) => (
               <RecipeItem
-              key={item.id}
+                key={item.id}
                 addToFavorites={() => addToFavorites(item)}
                 id={item.id}
                 image={item.image}
@@ -115,8 +123,8 @@ title={item.title}
             ))
           : null}
       </div>
-
     </div>
   );
 };
+
 export default Homepage;
