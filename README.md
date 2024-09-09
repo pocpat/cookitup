@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+#  Cook-It-Up
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Project Overview:
+I built a React-based food managing app as a practice project following the Udemy course "React JS Crash Course 2023 - Build A Food Managing App" (https://www.udemy.com/course/react-js-crash-course-2023-build-a-food-managing-app/), focusing on key React concepts such as state management, hooks, and API integration.
 
-In the project directory, you can run:
+## Technologies Used:
+*  **React:**  Utilized functional components to create reusable and modular UI elements.
+*  **React Hooks:** Implemented various hooks like useState, useEffect, and useContext for state management and side effects.
+*  **API Integration:** Fetched and displayed data from a remote API, allowing dynamic content updates.
+*  **Local Storage:** Managed local state with localStorage, enabling persistent data between sessions.
+*  **Google Firebase:** Deployed the app on Firebase for scalable hosting and real-time updates.
 
-### `npm start`
+## Features & How They Work:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Theme Toggle:
+ - ** What happens: **Users can switch between a light and dark theme by clicking the "Switch Theme" button. This toggles the background and title colors between green and orange.
+ - ** How it's done:** The theme switch is managed using the `useContext` hook to pass theme-related data globally between parent and child components. This allows seamless communication and state sharing across the app without the need for prop drilling.
+ -   ![toggle](public/01.jpg)
+   - ![Recipe Search](public/02.jpg)
+2. Recipe Search:
+ - ** What happens:** Users type a query into the "Search for Recipes" input field, and after clicking "Search," recipes are fetched from the Spoonacular API. Each result is displayed as a card with an image, title, and an "Add to Favorites" button.
+ - ** How it's done: **The search input is controlled using the `useState` hook, and the `API call` is triggered on button click. A loading state is handled using another piece of state to provide feedback during the `API request`.
+3. Displaying Recipe Cards:
+ - ** What happens:** After the search, a list of recipe cards appears on the screen. Each card contains an image, title, and an "Add to Favorites" button.
+ - ** How it's done: ** Recipe data is passed from the parent component to the child components as props, showcasing how data flows in a React component tree. Child components can communicate with the parent to handle adding to favorites.
+  - ![Recipe Search](public/03.jpg)
+4. Add to Favorites:
+ - ** What happens:** When a user clicks "Add to Favorites" on a recipe card, the recipe gets stored in the "Favorites" section below. It also includes a "Remove from Favorites" button for easy removal.
+ - ** How it's done: ** `useState` and `localStorage` are used to persist the favorites even after the page reloads. The useEffect hook manages side effects, such as saving or removing items from local storage when the state changes.
+5. Favorites Section & Search:
+ - ** What happens: **The "Favorites" section displays all the saved recipes. Users can filter their favorites by typing in the "Search Favorites" input field.
+ - ** How it's done: **The search filter for favorites is implemented using the `useReducer` hook, which handles the complex state of managing the favorites list and filtering results.
+ - ![Recipe Search](public/05.jpg)
+6. Performance Optimization:
+ - ** What happens: **The app efficiently handles the list rendering and API fetching to avoid unnecessary re-renders, ensuring smooth performance.
+ - ** How it's done: **Hooks like `useCallback` and `useMemo` are used to optimize the performance of the application, especially when dealing with larger lists of recipes and managing API responses.
