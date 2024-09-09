@@ -21,7 +21,7 @@ const Search = (props) => {
       setInputValue("");
       setIsApiSuccess(false);
     }
-  }, [isApiSuccess]);
+  }, [isApiSuccess,setIsApiSuccess]);
   return (
     <form onSubmit={handleSubmit} className="Search">
       <input

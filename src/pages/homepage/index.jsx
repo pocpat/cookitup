@@ -1,5 +1,11 @@
 import Search from "../../components/search";
-import { useEffect, useState, useReducer, useContext } from "react";
+import {
+  useEffect,
+  useState,
+  useReducer,
+  useContext,
+  useCallback,
+} from "react";
 import "./styles.css";
 import RecipeItem from "../../components/recipe-item/index";
 import FavoriteItem from "../../components/favorite-item/index";
@@ -32,9 +38,7 @@ const Homepage = () => {
   const [isApiSuccess, setIsApiSuccess] = useState(false);
   const [filteredState, dispatch] = useReducer(reducer, initialState); // useReducer is a hook that is used for state management in React. It is an alternative to useState. It is mostly preferable when you have complex state logic that involves multiple sub-values or when the next state depends on the previous one. useReducer also lets you optimize performance for components that trigger deep updates because you can pass dispatch down instead of callbacks.
 
-const {theme} = useContext(ThemeContext);
-
-
+  const { theme } = useContext(ThemeContext);
 
   const getDataFromSearchComponent = (getData) => {
     setLoadingState(true);
@@ -53,9 +57,8 @@ const {theme} = useContext(ThemeContext);
     getRecipes();
   };
 
-  const addToFavorites = (getCurrentRecipeItem) => {
+  const addToFavorites=useCallback((getCurrentRecipeItem) => {
     let copyFavorites = [...favorites];
-
     const index = copyFavorites.findIndex(
       (item) => item.id === getCurrentRecipeItem.id
     );
@@ -67,7 +70,10 @@ const {theme} = useContext(ThemeContext);
     } else {
       alert("Recipe is already in the favorites");
     }
-  };
+
+  }, [favorites]);
+
+    
 
   const removeFromFavorites = (getCurrentId) => {
     let copyFavorites = [...favorites];
@@ -80,6 +86,21 @@ const {theme} = useContext(ThemeContext);
   const filteredFavoritesItems = favorites.filter((item) =>
     item.title.toLowerCase().includes(filteredState.filteredValue)
   );
+
+  const renderRecipes = useCallback(() => {
+    if (recipes && recipes.length > 0) {
+      return recipes.map((item) => (
+        <RecipeItem
+          key={item.id}
+          addToFavorites={() => addToFavorites(item)}
+          id={item.id}
+          image={item.image}
+          title={item.title}
+        />
+      ));
+    }
+  }, [recipes, addToFavorites]);
+
   return (
     <div className="homepage">
       <Search
@@ -89,7 +110,12 @@ const {theme} = useContext(ThemeContext);
         setIsApiSuccess={setIsApiSuccess}
       />
       <div className="favorites-wrapper">
-        <h1 style = {theme?{color: '#12343b'}:{}} className="favorites-title">Favorites</h1>
+        <h1
+          style={theme ? { color: "#12343b" } : {}}
+          className="favorites-title"
+        >
+          Favorites
+        </h1>
         <div className="search-favorites">
           <input
             onChange={(e) =>
@@ -99,7 +125,6 @@ const {theme} = useContext(ThemeContext);
             type="text"
             name="searchfavorites"
             placeholder="Search Favorites"
-            
           />
         </div>
         <div className="favorites">
@@ -120,17 +145,7 @@ const {theme} = useContext(ThemeContext);
         <div className="loading">Loading recipes! Please wait.</div>
       )}
       <div className="items">
-        {recipes && recipes.length > 0
-          ? recipes.map((item) => (
-              <RecipeItem
-                key={item.id}
-                addToFavorites={() => addToFavorites(item)}
-                id={item.id}
-                image={item.image}
-                title={item.title}
-              />
-            ))
-          : null}
+        {renderRecipes()}
       </div>
     </div>
   );
