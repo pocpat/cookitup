@@ -23,7 +23,7 @@
     margin-top: 28px;
   }
   
-  .loading {
+  .loading , .no-items{
     font-size: 40px;
     text-transform: uppercase;
     color: #fff;

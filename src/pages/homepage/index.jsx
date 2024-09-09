@@ -69,6 +69,7 @@ const Homepage = () => {
         setFavorites(copyFavorites);
         // save the favorites in localStorage
         localStorage.setItem("favorites", JSON.stringify(copyFavorites));
+        window.scrollTo({top: 0, behavior: 'smooth'}); // scroll to top
       } else {
         alert("Recipe is already in the favorites");
       }
@@ -129,6 +130,7 @@ const Homepage = () => {
           />
         </div>
         <div className="favorites">
+        {!filteredFavoritesItems.length && <div style={{display:"flex", width: '100%', justifyContent:"center"}} className="no-items">No favorites found</div>}
           {filteredFavoritesItems && filteredFavoritesItems.length > 0
             ? filteredFavoritesItems.map((item) => (
                 <FavoriteItem
@@ -163,6 +165,7 @@ const Homepage = () => {
           [loadingState, recipes, addToFavorites]
         )}
       </div>
+      {!loadingState&& !recipes.length && <div className="no-items">No recipes found</div>}
     </div>
   );
 };
