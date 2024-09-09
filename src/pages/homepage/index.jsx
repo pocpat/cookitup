@@ -84,10 +84,16 @@ const Homepage = () => {
     localStorage.setItem("favorites", JSON.stringify(copyFavorites));
   };
 
+  useEffect(() => {
+    const extractFavoritesFromLocalStorageOnPageLoad = JSON.parse(
+      localStorage.getItem("favorites")
+    ) || [];
+    setFavorites(extractFavoritesFromLocalStorageOnPageLoad);
+  }, []);
   // filter the favorites
-  const filteredFavoritesItems = favorites.filter((item) =>
+  const filteredFavoritesItems = favorites&& favorites.length >0 ? favorites.filter((item) =>
     item.title.toLowerCase().includes(filteredState.filteredValue)
-  );
+  ):[];
 
   const renderRecipes = useCallback(() => {
     if (recipes && recipes.length > 0) {
