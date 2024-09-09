@@ -1,7 +1,9 @@
 import "./styles.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { ThemeContext } from "../../App";
 
 const Search = (props) => {
+  const {theme} = useContext(ThemeContext);
   const [inputValue, setInputValue] = useState("");
   const { getDataFromSearchComponent, isApiSuccess,setIsApiSuccess } = props;
   const handleInputValue = (e) => {
@@ -30,7 +32,7 @@ const Search = (props) => {
         type="text"
         placeholder="Search for recipes"
       />
-      <button type="submit">Search</button>
+      <button style = {theme?{backgroundColor: '#12343b'}:{}} type="submit">Search</button>
     </form>
   );
 };

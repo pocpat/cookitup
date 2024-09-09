@@ -1,22 +1,22 @@
 import Search from "../../components/search";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer, useContext } from "react";
 import "./styles.css";
 import RecipeItem from "../../components/recipe-item/index";
 import FavoriteItem from "../../components/favorite-item/index";
+import { ThemeContext } from "../../App";
 
 const apiKey = process.env.REACT_APP_API_KEY;
 const dummydata = "dummy-----data";
 
-
 const reducer = (state, action) => {
   switch (action.type) {
     case "filterFavorites":
-      console.log("action", action)
+      console.log("action", action);
       return {
         ...state,
         filteredValue: action.value,
-      }
-      default:
+      };
+    default:
       return state;
   }
 };
@@ -31,6 +31,10 @@ const Homepage = () => {
   const [favorites, setFavorites] = useState([]);
   const [isApiSuccess, setIsApiSuccess] = useState(false);
   const [filteredState, dispatch] = useReducer(reducer, initialState); // useReducer is a hook that is used for state management in React. It is an alternative to useState. It is mostly preferable when you have complex state logic that involves multiple sub-values or when the next state depends on the previous one. useReducer also lets you optimize performance for components that trigger deep updates because you can pass dispatch down instead of callbacks.
+
+const {theme} = useContext(ThemeContext);
+
+
 
   const getDataFromSearchComponent = (getData) => {
     setLoadingState(true);
@@ -48,8 +52,6 @@ const Homepage = () => {
     }
     getRecipes();
   };
-
-  
 
   const addToFavorites = (getCurrentRecipeItem) => {
     let copyFavorites = [...favorites];
@@ -87,11 +89,18 @@ const Homepage = () => {
         setIsApiSuccess={setIsApiSuccess}
       />
       <div className="favorites-wrapper">
-        <h1 className="favorites-title">Favorites</h1>
+        <h1 style = {theme?{color: '#12343b'}:{}} className="favorites-title">Favorites</h1>
         <div className="search-favorites">
-          <input onChange={(e)=>dispatch({type: 'filterFavorites', value: e.target.value})}
-          value={filteredState.filteredValue} type="text"
-          name="searchfavorites" placeholder="Search Favorites" />
+          <input
+            onChange={(e) =>
+              dispatch({ type: "filterFavorites", value: e.target.value })
+            }
+            value={filteredState.filteredValue}
+            type="text"
+            name="searchfavorites"
+            placeholder="Search Favorites"
+            
+          />
         </div>
         <div className="favorites">
           {filteredFavoritesItems && filteredFavoritesItems.length > 0
