@@ -5,6 +5,7 @@ import {
   useReducer,
   useContext,
   useCallback,
+  useMemo,
 } from "react";
 import "./styles.css";
 import RecipeItem from "../../components/recipe-item/index";
@@ -57,23 +58,23 @@ const Homepage = () => {
     getRecipes();
   };
 
-  const addToFavorites=useCallback((getCurrentRecipeItem) => {
-    let copyFavorites = [...favorites];
-    const index = copyFavorites.findIndex(
-      (item) => item.id === getCurrentRecipeItem.id
-    );
-    if (index === -1) {
-      copyFavorites.push(getCurrentRecipeItem);
-      setFavorites(copyFavorites);
-      // save the favorites in localStorage
-      localStorage.setItem("favorites", JSON.stringify(copyFavorites));
-    } else {
-      alert("Recipe is already in the favorites");
-    }
-
-  }, [favorites]);
-
-    
+  const addToFavorites = useCallback(
+    (getCurrentRecipeItem) => {
+      let copyFavorites = [...favorites];
+      const index = copyFavorites.findIndex(
+        (item) => item.id === getCurrentRecipeItem.id
+      );
+      if (index === -1) {
+        copyFavorites.push(getCurrentRecipeItem);
+        setFavorites(copyFavorites);
+        // save the favorites in localStorage
+        localStorage.setItem("favorites", JSON.stringify(copyFavorites));
+      } else {
+        alert("Recipe is already in the favorites");
+      }
+    },
+    [favorites]
+  );
 
   const removeFromFavorites = (getCurrentId) => {
     let copyFavorites = [...favorites];
@@ -145,7 +146,22 @@ const Homepage = () => {
         <div className="loading">Loading recipes! Please wait.</div>
       )}
       <div className="items">
-        {renderRecipes()}
+        {/*{renderRecipes()} */}
+        {useMemo(
+          () =>
+            !loadingState && recipes && recipes.length > 0
+              ? recipes.map((item) => (
+                  <RecipeItem
+                    key={item.id}
+                    addToFavorites={() => addToFavorites(item)}
+                    id={item.id}
+                    image={item.image}
+                    title={item.title}
+                  />
+                ))
+              : null,
+          [loadingState, recipes, addToFavorites]
+        )}
       </div>
     </div>
   );
